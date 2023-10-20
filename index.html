@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang = "ja">
+    <head>
+        <meta charset = "utf-8">
+        <title>最終課題</title>
+        <script type="text/javascript" src = "js/jquery-3.3.1.js"></script>
+        <script type = "text/javascript">
+            "use strict"
+            var ctx;
+            var fire1 = [];
+            var fire2 = [];
+            var width, height;
+            var color = [ "#ff5400", "#ffcc00"];
+            var intervalcount = 0;
+            var I = 700;
+            var sound;
+
+            function firecomponent(_x, _y, _r, _vx, _vy, alp, col){
+                this.x = _x;
+                this.y = _y;
+                this.r = _r;
+                this.vx = _vx;
+                this.vy = _vy;
+                this.alp = alp;
+                this.col = col;
+                this.update = function(yuragix, noboruhayasa){
+                    this.x +=this.vx;
+                    this.y +=this.vy;
+
+                    this.vx = this.vx + yuragix;
+                    this.vy = this.vy - noboruhayasa ;
+                }
+                this.draw = function( ctx ){
+                    ctx.fillStyle = this.col;
+                    ctx.globalAlpha = this.alp;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r,0, Math.PI*2);
+                    ctx.closePath();
+                    ctx.fill();
+                }
+            }
+
+            function drawmaki(a, b, id){
+                this.a = a;
+                this.b = b;
+                
+                if(id == 1){
+                ctx.fillStyle =  "#cf853f";
+                ctx.globalAlpha = 0.6
+                ctx.beginPath();
+                ctx.moveTo(this.a, this.b);
+                ctx.lineTo(this.a + 40, this.b + 20);
+                ctx.lineTo(this.a + 35, this.b + 30);
+                ctx.lineTo(this.a - 5, this.b + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = "#deb887";
+                ctx.beginPath();
+                ctx.moveTo(this.a-2.5, this.b+5);
+                ctx.lineTo(this.a-2.5 + 40, this.b+5 + 20);
+                ctx.lineTo(this.a+ 35, this.b + 30);
+                ctx.lineTo(this.a - 5, this.b + 10);
+                ctx.closePath();
+                ctx.fill();
+                };
+
+                if(id == 0){
+                ctx.fillStyle =  "#cf853f";
+                ctx.globalAlpha = 0.6
+                ctx.beginPath();
+                ctx.moveTo(this.a, this.b);
+                ctx.lineTo(this.a - 40, this.b + 20);
+                ctx.lineTo(this.a - 35, this.b + 30);
+                ctx.lineTo(this.a + 5, this.b + 10);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = "#deb887";
+                ctx.beginPath();
+                ctx.moveTo(this.a+2.5, this.b+5);
+                ctx.lineTo(this.a+2.5 - 40, this.b+5 + 20);
+                ctx.lineTo(this.a- 35, this.b + 30);
+                ctx.lineTo(this.a + 5, this.b + 10);
+                ctx.closePath();
+                ctx.fill();
+                };
+            }
+
+            function drawback(){
+                ctx.fillStyle = "#0079ff"
+                ctx.globalAlpha = 0.6;
+                ctx.fillRect(0, 0, width, height*1.6/2.6);
+                ctx.globalAlpha = 0.8;
+                ctx.fillStyle = "#00ff00"
+                ctx.fillRect(0, height*1.6/2.6, width, height);
+                ctx.fillStyle = "brown"
+                ctx.globalAlpha = 0.8;
+                ctx.beginPath();
+                ctx.moveTo(300, height*(3/4)+50);
+                ctx.lineTo(350, height*(3/4)+42.5);
+                ctx.lineTo(375, height*(3/4)+15);
+                ctx.lineTo(350, height*(3/4)-10);
+                ctx.lineTo(300, height*(3/4)-20);
+                ctx.lineTo(250, height*(3/4)-10);
+                ctx.lineTo(225, height*(3/4)+15);
+                ctx.lineTo(250, height*(3/4)+42.5);
+                ctx.closePath();
+                ctx.fill();
+                ctx.globalAlpha = 0.9;                    
+                ctx.fillStyle = "#000000"
+                ctx.fillRect(0, 0, width, height);
+            };
+
+            function moon(sty, sty2){
+
+                ctx.fillStyle = sty;
+                ctx.globalAlpha = 0.7;                
+                ctx.beginPath();                    
+                ctx.arc(450, height*(1/4), 20, 0, 2*Math.PI);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.globalAlpha = 0.2;                
+                ctx.beginPath();                    
+                ctx.arc(450, height*(1/4), 23 + 1.5*Math.sin(3 + intervalcount/20), 0, 2*Math.PI);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.globalAlpha = 0.1;                
+                ctx.beginPath();                    
+                ctx.arc(450, height*(1/4), 23 + 2*Math.sin(7 + intervalcount/20), 0, 2*Math.PI);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.strokeStyle = sty2;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.2;
+                ctx.beginPath();                    
+                ctx.arc(456, height*(1/4) + 9, 5, 0, 2*Math.PI);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.beginPath();                    
+                ctx.arc(463, height*(1/4) , 3, 0, 2*Math.PI);
+                ctx.closePath();
+                ctx.stroke();
+
+            };
+
+            $(function(){
+                var canvas = $("#main");
+                ctx = canvas[0].getContext("2d");
+                sound = $("#sound")[0];
+
+                
+                
+                width = canvas[0].width;
+                height = canvas[0].height;
+
+                ctx.strokeStyle = "#f0000f";
+                ctx.lineWidth = 3;
+
+                for(var i = 0; i < I; i++ ){
+                    fire1[i] = new firecomponent(
+                        width/2 + 4*Math.sin(Math.random()*2*Math.PI),
+                        height*(3/4) + 4*Math.sin(Math.random()*2*Math.PI) ,
+                        10* Math.random(),
+                        0,
+                        0,
+                        0.8*Math.random(),
+                        color[Math.floor(Math.random()*2)]
+                    );
+                }
+
+                for(var i = 0; i < 70; i++ ){
+                    fire2[i] = new firecomponent(
+                        Math.random() * 600,
+                        Math.random() * (height*1.6/2.6),
+                        1* Math.random(),
+                        0,
+                        0,
+                        0.8*Math.random(),
+                        "yellow"
+                    );
+                }
+
+                setInterval( ondraw, 50);
+
+                function ondraw(){
+                    sound.volume=0.03;
+                
+                    if (sound.currentTime >= 39.0){
+                    sound.pause();
+                    sound.currentTime = 2.0;}
+                    sound.play();  
+
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    drawback();
+                    
+                    ctx.fillStyle = "orange";
+                    ctx.globalAlpha = 0.3;
+                    ctx.beginPath();                    
+                    ctx.arc(300, height*(3/4), 40 + 2*Math.sin(intervalcount/5), 0, 2*Math.PI);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = "orange";
+                    ctx.globalAlpha = 0.2;
+                    ctx.beginPath();                    
+                    ctx.arc(300, height*(3/4), 50 + 2*Math.sin(1+intervalcount/5), 0, 2*Math.PI);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = "orange";
+                    ctx.globalAlpha = 0.1;
+                    ctx.beginPath();                    
+                    ctx.arc(300, height*(3/4), 70 + 2*Math.sin(2+intervalcount/5), 0, 2*Math.PI);
+                    ctx.closePath();
+                    ctx.fill();
+                    new drawmaki(275, height*(3/4), 1);
+                    new drawmaki(325, height*(3/4), 0);
+                    new drawmaki(275, height*(3/4) + 10, 1);
+                    new drawmaki(325, height*(3/4) + 10, 0);
+
+                    moon("#ffff00", "#555500");
+
+                    for( var i = 0; i < fire1.length; i++ ){
+
+                        fire1[i].update(1*Math.sin(Math.random()* 2*Math.PI), 0.2 + Math.random()*0.15);
+
+                        var x = fire1[i].x;
+                        var y = fire1[i].y;
+                        var r = fire1[i].r;
+                        var a = fire1[i].alp;
+
+                        fire1[i].alp -=  0.08*Math.random();
+
+                        if( a <= 0.00 || y <= height*(3/4) - 100 || y <= height*(3/4) -10 && x <= 273 || y <= height*(3/4) -10 && x >= 317 || y <= height*(3/4) -30 && x <= 280 || y <=height*(3/4) -30 && x >= 312 || y <= height*(3/4) -50 && x >= 305 || y <= height*(3/4) -50 && x <= 295 || y <= height*(3/4) -100 && r >= 6 ){
+                            fire1[i].x = width/2+ 4*Math.sin(Math.random()*2*Math.PI);
+                            fire1[i].y = height*(3/4) + 4*Math.sin(Math.random()*2*Math.PI); 
+                            fire1[i].alp = 0.8;
+                            fire1[i].vx = 0;
+                            fire1[i].vy = 0;                                                
+                        };
+
+                        fire1[i].draw( ctx );
+                    }
+
+                    for( var i = 0; i < fire2.length; i++){
+                        fire2[i].draw( ctx );
+                    }
+
+                    intervalcount++
+                }    
+            });
+        </script>    
+    </head>
+    <body>
+        <canvas id = "main" width = "600" height = "300" ></canvas>
+        <audio id = "sound">
+            <source src="焚き火.mp3">   
+        </audio>
+    </body>
+</html>        
